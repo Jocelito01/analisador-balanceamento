@@ -71,6 +71,10 @@ def Planilha(arquivo_entrada):
 
     print(f"✅ Novo arquivo CSV salvo como '{arquivo_saida}' com colunas separadas.")
 
+def filtro(arquivo_csv):
+    with open(arquivo_csv, newline='', encoding='utf-8') as fil:
+        leitorData = list(csv.DictReader(fil))
+
 
 def extrato(arquivo_csv, modelo):
     contador_ok = 0
@@ -136,8 +140,8 @@ def Grafico(modelo, arquivo):
         raio_superior = 172
     elif modelo == '1141':
         theta = np.linspace(3.76991, 4.81711, 360)
-        raio_inferior = 39
-        raio_superior = 79
+        raio_inferior = 32
+        raio_superior = 72
     else:
         theta = np.linspace(0, 2*np.pi, 360)
         raio_inferior = 0
