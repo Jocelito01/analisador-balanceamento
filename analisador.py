@@ -59,7 +59,7 @@ def Planilha(arquivo_entrada):
 
             linha_saida = [rotor_id, status]
             for l in linhas:
-                static = l.get('Static [gmm]') or l.get('Amount [gmm]') or l.get('Couple Plane') or ''
+                static = l.get('Static [gmm]') or l.get('Amount 1 [gmm]') or ''
                 angle = l.get('Angle') or l.get('Angle"') or l.get('Angle 1') or ''
                 linha_saida.append(static)
                 linha_saida.append(angle)
