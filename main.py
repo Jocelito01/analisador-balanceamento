@@ -26,10 +26,8 @@ if st.button("🔍 Processar"):
           st.write(f"Modelo: {extrato_dados['modelo']}")
           st.write(f"Peças boas: {extrato_dados['contador_ok']}")
           st.write(f"Reprovadas no balanceamento: {extrato_dados['contador_nok']}")
-          st.write(f"Média de desbalanceamento primeira medição: {extrato_dados['mediaE1']:.2f}")
-          st.write(f"Média do ângulo primeira medição: {extrato_dados['mediaA1']:.2f}")
-          st.write(f"Média de desbalanceamento pós correção: {extrato_dados['mediaEF']:.2f}")
-          st.write(f"Média do ângulo pós correção: {extrato_dados['mediaAF']:.2f}")
+          st.write(f"Média de desbalanceamento primeira medição: {extrato_dados['mediaE']:.2f}")
+          st.write(f"Média do ângulo primeira medição: {extrato_dados['mediaA']:.2f}")
 
           # Gerar e disponibilizar Excel para download
 

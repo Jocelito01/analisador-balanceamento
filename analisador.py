@@ -59,8 +59,8 @@ def Planilha(arquivo_entrada):
 
             linha_saida = [rotor_id, status]
             for l in linhas:
-                static = l.get('Static [gmm]') or l.get('Amount 1 [gmm]') or ''
-                angle = l.get('Angle') or l.get('Angle"') or l.get('Angle 1') or ''
+                static = l.get('Static [gmm]', '')
+                angle = l.get('Angle') or l.get('Angle"') or ''
                 linha_saida.append(static)
                 linha_saida.append(angle)
 
@@ -79,10 +79,8 @@ def filtro(arquivo_csv):
 def extrato(arquivo_csv, modelo):
     contador_ok = 0
     contador_nok = 0
-    valoresE1 = []
-    valoresA1 = []
-    valoresEF = []
-    valoresAF = []
+    valoresE = []
+    valoresA = []
 
     with open(arquivo_csv, newline='', encoding='utf-8') as f:
         leitor = list(csv.DictReader(f))
@@ -90,7 +88,7 @@ def extrato(arquivo_csv, modelo):
             estatico = linha.get('Static [gmm] 1', '').strip()
             if estatico:
                 try:
-                    valoresE1.append(float(estatico))
+                    valoresE.append(float(estatico))
                 except ValueError:
                     pass
 
@@ -98,24 +96,10 @@ def extrato(arquivo_csv, modelo):
             angulo = linha.get('Angle 1', '').strip()
             if angulo:
                 try:
-                    valoresA1.append(float(angulo))
-                except ValueError:
-                    pass
-        for linha in leitor:
-            estatico = linha.get('Static [gmm] 2', '').strip()
-            if estatico:
-                try:
-                    valoresEF.append(float(estatico))
+                    valoresA.append(float(angulo))
                 except ValueError:
                     pass
 
-        for linha in leitor:
-            angulo = linha.get('Angle 2', '').strip()
-            if angulo:
-                try:
-                    valoresAF.append(float(angulo))
-                except ValueError:
-                    pass
         for linha in leitor:
             status = linha.get('Status Final', '').strip().upper()
             if status == 'OK':
@@ -123,19 +107,15 @@ def extrato(arquivo_csv, modelo):
             elif status == 'NOK':
                 contador_nok += 1
 
-    mediaE1 = sum(valoresE1) / len(valoresE1) if valoresE1 else 0
-    mediaA1 = sum(valoresA1) / len(valoresA1) if valoresA1 else 0
-    mediaEF = sum(valoresEF) / len(valoresEF) if valoresEF else 0
-    mediaAF = sum(valoresAF) / len(valoresAF) if valoresAF else 0
+    mediaE = sum(valoresE) / len(valoresE) if valoresE else 0
+    mediaA = sum(valoresA) / len(valoresA) if valoresA else 0
 
     return {
         "modelo": modelo,
         "contador_ok": contador_ok,
         "contador_nok": contador_nok,
-        "mediaE1": mediaE1,
-        "mediaA1": mediaA1,
-        "mediaEF": mediaEF,
-        "mediaAF": mediaAF
+        "mediaE": mediaE,
+        "mediaA": mediaA
     }
 
 
@@ -208,7 +188,7 @@ def Grafico(modelo, arquivo):
     for i, (raios, thetas) in enumerate(valores_por_par):
         if raios and thetas:
             cor = cores[i % len(cores)]
-            ax.scatter(thetas, raios, color=cor, label=f'Medição {i+1}', s=5, alpha=0.7)
+            ax.scatter(thetas, raios, color=cor, label=f'Static/Angle {i+1}', s=5, alpha=0.7)
 
     plt.title('Gráfico de Desbalanceamento')
     plt.legend(loc='upper right')
@@ -228,10 +208,8 @@ def gerar_excel_com_grafico(dados_extrato, arquivo_csv):
             "Modelo": dados_extrato["modelo"],
             "Peças OK": dados_extrato["contador_ok"],
             "Peças NOK": dados_extrato["contador_nok"],
-            "Média Desbalanceamento 1": dados_extrato["mediaE1"],
-            "Média Ângulo 1": dados_extrato["mediaA1"],
-            "Média Desbalanceamento 2": dados_extrato['mediaEF'],
-            "Média Ângulo 2": dados_extrato['mediaAF']
+            "Média Static [gmm] 1": dados_extrato["mediaE"],
+            "Média Ângulo 1": dados_extrato["mediaA"]
         }])
         df_extrato.to_excel(writer, sheet_name="Resumo", index=False)
 
