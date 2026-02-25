@@ -192,6 +192,7 @@ def extrato(arquivo_csv, modelo):
 def Grafico(modelo, arquivo):
     fundo_cor = '#ffffff'
     if modelo == '4147': theta = np.linspace(0, 2*np.pi, 360); raio_inferior = 0; raio_superior = 40
+    elif modelo == 'MB03': theta = np.linspace(0, 2*np.pi, 360); raio_inferior = 0; raio_superior = 40
     elif modelo == 'TB01-1200': theta = np.linspace(3.83972, 4.01426, 360); raio_inferior = 330; raio_superior = 370
     elif modelo == 'TB01-1205': theta = np.linspace(4.01426, 4.18879, 360); raio_inferior = 420; raio_superior = 460
     elif modelo == '1121': theta = np.linspace(3.26377, 4.31096, 360); raio_inferior = 128; raio_superior = 172
