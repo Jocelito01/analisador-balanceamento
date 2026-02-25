@@ -61,7 +61,9 @@ def Planilha(arquivo_entrada, data_inicio=None, data_fim=None):
             # %m = Mês, %d = Dia, %y = Ano (2 dígitos, ex: 23, 24)
             formatos_aceitos = [
                 '%m/%d/%y %H:%M:%S',  # Ex: 02/15/24 14:30:00
+                '%m/%d/%Y %H:%M:%S',  # Ex: 02/15/2024 14:30:00
                 '%m/%d/%y %H:%M',     # Ex: 02/15/24 14:30
+                '%m/%d/%Y %H:%M',     # Ex: 02/15/2024 14:30
                 '%m/%d/%y',           # Ex: 02/15/24 (sem hora)
             ]
 
