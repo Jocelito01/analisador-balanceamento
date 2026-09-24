@@ -134,9 +134,12 @@ def extrato(arquivo_csv, modelo):
     valoresA1 = []
     valoresEF = []
     valoresAF = []
+    static_total = []
+    angulo_total = []
 
     with open(arquivo_csv, newline='', encoding='utf-8') as f:
         leitor = list(csv.DictReader(f))
+
         for linha in leitor:
             estatico = linha.get('Static [gmm] 1', '').strip()
             if estatico:
@@ -145,14 +148,13 @@ def extrato(arquivo_csv, modelo):
                 except ValueError:
                     pass
 
-        for linha in leitor:
             angulo = linha.get('Angle 1', '').strip()
             if angulo:
                 try:
                     valoresA1.append(float(angulo))
                 except ValueError:
                     pass
-        for linha in leitor:
+
             estatico = linha.get('Static [gmm] 2', '').strip()
             if estatico:
                 try:
@@ -160,14 +162,27 @@ def extrato(arquivo_csv, modelo):
                 except ValueError:
                     pass
 
-        for linha in leitor:
             angulo = linha.get('Angle 2', '').strip()
             if angulo:
                 try:
                     valoresAF.append(float(angulo))
                 except ValueError:
                     pass
-        for linha in leitor:
+
+            for chave, valor in linha.items():
+                if chave and chave.startswith('Static'):
+                    try:
+                        valor_float = float(str(valor).strip().replace(',', '.'))
+                        static_total.append(valor_float)
+                    except (TypeError, ValueError):
+                        pass
+                if chave and chave.startswith('Angle'):
+                    try:
+                        valor_float = float(str(valor).strip().replace(',', '.'))
+                        angulo_total.append(valor_float)
+                    except (TypeError, ValueError):
+                        pass
+
             status = linha.get('Status Final', '').strip().upper()
             if status == 'OK':
                 contador_ok += 1
@@ -179,6 +194,10 @@ def extrato(arquivo_csv, modelo):
     mediaEF = sum(valoresEF) / len(valoresEF) if valoresEF else 0
     mediaAF = sum(valoresAF) / len(valoresAF) if valoresAF else 0
 
+    qtd_furos = len(static_total)
+    amplitude_desbalanceamento = (max(static_total) - min(static_total)) if static_total else 0
+    amplitude_angulo = (max(angulo_total) - min(angulo_total)) if angulo_total else 0
+
     return {
         "modelo": modelo,
         "contador_ok": contador_ok,
@@ -186,7 +205,10 @@ def extrato(arquivo_csv, modelo):
         "mediaE1": mediaE1,
         "mediaA1": mediaA1,
         "mediaEF": mediaEF,
-        "mediaAF": mediaAF
+        "mediaAF": mediaAF,
+        "qtd_furos": qtd_furos,
+        "amplitude_desbalanceamento": amplitude_desbalanceamento,
+        "amplitude_angulo": amplitude_angulo
     }
 
 def Grafico(modelo, arquivo):
@@ -382,7 +404,10 @@ def gerar_excel_com_grafico(dados_extrato, arquivo_csv):
             "Média Desbalanceamento 1": dados_extrato["mediaE1"],
             "Média Ângulo 1": dados_extrato["mediaA1"],
             "Média Desbalanceamento 2": dados_extrato['mediaEF'],
-            "Média Ângulo 2": dados_extrato['mediaAF']
+            "Média Ângulo 2": dados_extrato['mediaAF'],
+            "Taxa de Furação": dados_extrato['qtd_furos'],
+            "Amplitude Desbalanceamento (Maior - Menor)": dados_extrato['amplitude_desbalanceamento'],
+            "Amplitude Ângulo (Maior - Menor)": dados_extrato['amplitude_angulo']
         }])
         df_extrato.to_excel(writer, sheet_name="Resumo", index=False)
         df.to_excel(writer, sheet_name="Dados", index=False)

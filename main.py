@@ -119,6 +119,11 @@ if botao_processar or st.session_state.get('processado', False):
                 m3.metric("Média Desb. 1", f"{extrato_dados['mediaE1']:.2f}")
                 m4.metric("Média Desb. Final", f"{extrato_dados['mediaEF']:.2f}")
 
+                m5, m6, m7 = st.columns(3)
+                m5.metric("Taxa de Furação", f"{extrato_dados['qtd_furos']} furos")
+                m6.metric("Amplitude Desbalanceamento", f"{extrato_dados['amplitude_desbalanceamento']:.2f}")
+                m7.metric("Amplitude Ângulo", f"{extrato_dados['amplitude_angulo']:.2f}")
+
             with container_downloads:
                 excel_data = gerar_excel_com_grafico(extrato_dados, caminho_csv_separado)
                 with open(caminho_csv_separado, "rb") as f: csv_data = f.read()
