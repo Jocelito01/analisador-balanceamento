@@ -1,5 +1,6 @@
 import csv
 import math
+import re
 import matplotlib.pyplot as plt
 import numpy as np
 from collections import defaultdict
@@ -134,6 +135,7 @@ def extrato(arquivo_csv, modelo):
     valoresA1 = []
     valoresEF = []
     valoresAF = []
+    furos_total = []
     static_total = []
     angulo_total = []
 
@@ -174,6 +176,10 @@ def extrato(arquivo_csv, modelo):
                     try:
                         valor_float = float(str(valor).strip().replace(',', '.'))
                         static_total.append(valor_float)
+                        if chave.strip() != 'Static [gmm] 1':
+                            match = re.search(r'(\d+)\s*$', chave)
+                            if match and int(match.group(1)) >= 2:
+                                furos_total.append(valor_float)
                     except (TypeError, ValueError):
                         pass
                 if chave and chave.startswith('Angle'):
@@ -194,7 +200,9 @@ def extrato(arquivo_csv, modelo):
     mediaEF = sum(valoresEF) / len(valoresEF) if valoresEF else 0
     mediaAF = sum(valoresAF) / len(valoresAF) if valoresAF else 0
 
-    qtd_furos = len(static_total)
+    qtd_furos = len(furos_total)
+    total_pecas = contador_ok + contador_nok
+    media_furos_por_peca = qtd_furos / total_pecas if total_pecas else 0
     amplitude_desbalanceamento = (max(static_total) - min(static_total)) if static_total else 0
     amplitude_angulo = (max(angulo_total) - min(angulo_total)) if angulo_total else 0
 
@@ -207,6 +215,7 @@ def extrato(arquivo_csv, modelo):
         "mediaEF": mediaEF,
         "mediaAF": mediaAF,
         "qtd_furos": qtd_furos,
+        "media_furos_por_peca": media_furos_por_peca,
         "amplitude_desbalanceamento": amplitude_desbalanceamento,
         "amplitude_angulo": amplitude_angulo
     }
@@ -406,6 +415,7 @@ def gerar_excel_com_grafico(dados_extrato, arquivo_csv):
             "Média Desbalanceamento 2": dados_extrato['mediaEF'],
             "Média Ângulo 2": dados_extrato['mediaAF'],
             "Taxa de Furação": dados_extrato['qtd_furos'],
+            "Média de Furos por Peça": dados_extrato['media_furos_por_peca'],
             "Amplitude Desbalanceamento (Maior - Menor)": dados_extrato['amplitude_desbalanceamento'],
             "Amplitude Ângulo (Maior - Menor)": dados_extrato['amplitude_angulo']
         }])
